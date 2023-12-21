@@ -1,26 +1,103 @@
-# polkadot-2023-winter-contracts
+# polkadot-2023-winter-contracts 🚀 How to run the project
 
-# current deployed address on moonbase alpha
+## 📦 Prerequisites
 
-WDEV: 0x3d0773F4D6092ddA362942718d23e2d5839E9923
-UNISWAPV2_ROUTER_02: 0x0E1CE7f7E08682E581166E2610Ba185Bff3C78B4
-UNISWAPV2_FACTORY: 0x7cfEc7b0C916682f41AaD078F72960BDFaC59B41
+- Node.js v18.18.2+
+- npm v9.8.1+
+- Make sure you have installed [foundry](https://github.com/foundry-rs/foundry) on your machine.
 
-WBTC: 0x1717ce2518f2cE585a37E5EB9Ae84a4E9d15C933
-WETH: 0x44e124657dc15dceA2296C9e576055D8671D2010
-WSOL: 0xa0D0C7d0FEdf76FE8916bA27865C5f22EA4E6E88
-DAI: 0xD4A7fe0B233698329b3Cd9a069E40321DE8B7B36
+## 🔆 Deploy smart contracts
 
-WBTC/USD: 0xc04551568ecEb527c7086b729B4023C4bdbe0b23
-WETH/USD: 0x40853B288AaCbAcbc304eF1572929C21Aef6b16b
-WSOL/USD: 0xAe31aCc3a0fFFD9F9cc7bce7857B8013b6f64498
-DAI/USD: 0x783Ba53f62d3C7283463c251d0D092047109FA0A
+### Step 1. Clone the repository
 
-WDEV/USD: 0x6427C7c9f8c46C046C3e3B6397d6c8025605F8f7
+Note: the smart contracts and frontend are located in two repositories, please use the correct one.
 
-vaultFactory: 0x5dfb6B780ABb253EFCf71E6Ad746b037E87af119
-vauleEvaluator: 0x56dFCCf1CaCFDB4B7a8734e1180caf6a72a03095
-integrationManager: 0x5e7F4f3D819579B72250eA3905FeDfEC9d839ee5
+```bash
+git clone [GIT_REPOSITORY_URL] --recursive
+```
 
-adapterUniswapV2Exchange: 0x9E21b1C0335DC42ddD1a0a6054Afe04f5AE4cC9D
-adapterUniswapV2LP: 0xE280491f1A7505cd5871c04175F0e01FaA98DB16
+### Step2. Go to the directory
+```bash
+cd [Project Name]
+```
+
+### Step 3. Create your `.env` file by copying `.env.example`
+
+There is a private key of a wallet with a positive balance, with which you can deploy the smart contracts directly.
+
+```bash
+cp .env.example .env
+```
+
+You can also use your wallet on the Moonbase Alpha TestNet by setting `PRIVATE_KEY` in the `.env` file.
+
+
+### Step 4. Deploy Uniswap V2 on the Moonbase Alpha TestNet
+
+(1) Build the project.
+```bash
+forge build
+```
+
+(2) Find the "init code hash". It is the `bytecode`'s `object` in `out/UniswapV2Pair.sol/UniswapV2Pair.json`.
+
+(3) Format the object using an online tool: https://emn178.github.io/online-tools/keccak_256.html. Choose `Hex` as the input type and `Hash` as the output type. Copy the bytecode located in (2) into the input box and delete the `0x` at the beginning.
+
+(4) Replace the init code hash in `lib/uniswapv2/src/libraries/UniswapV2Library.sol`, line 26) with the output of (3).
+
+(5) Deploy the Uniswap V2 on the Moonbase Alpha TestNet.
+```bash
+forge script ./script/UniswapV2Deploy.s.sol --skip-simulation --rpc-url https://moonbase-alpha.public.blastapi.io --broadcast --slow -vvv
+```
+
+(6) Remember the three addresses (`wnativetoken address`, `factory address`, and `router address`) shown in `===Logs===` in the console. They will be used later.
+
+### Step 5. Deploy test environment, including ERC20 test tokens, Uniswap V2 liquidity pools, and mocked Chainlink V3's price feed.
+
+(1) Replace `UNISWAP_V2_ROUTER_02` in `script/EnvironmentDeploy.s.sol` (line 14) with the `router address` in Step 4's (6).
+
+(2) Deploy the corresponding contracts
+```bash
+forge script ./script/EnvironmentDeploy.s.sol --skip-simulation --rpc-url https://moonbase-alpha.public.blastapi.io --broadcast --slow -vvv
+```
+
+(3) Remember nine addresses shown in `===Logs===` in the console: `erc20WBTCAddress`, `erc20WETHAddress`, `erc20WSOLAddress`, `erc20DAIAddress`, `btcUsdAggregatorAddress`, `ethUsdAggregatorAddress`, `solEthAggregatorAddress`, `daiUsdAggregatorAddress`, and `wNativeTokenUsdAggregatorAddress`. They will be used later.
+
+(4) Replace `WNATIVE_TOKEN` with `wnativetoken address` in `script/VaultFactoryDeploy.s.sol`.
+
+(5) Replace `WNATIVE_TOKEN_USD_AGGREGATOR` with `wNativeTokenUsdAggregatorAddress` in `script/VaultFactoryDeploy.s.sol`.
+
+(6) Replace `WBTC`, `WETH`, `WSOL`, and `DAI` with `erc20WBTCAddress`, `erc20WETHAddress`, `erc20WSOLAddress`, and `erc20DAIAddress` in `script/VaultFactoryDeploy.s.sol`, respectively.
+
+(7) Replace `BTC_USD_AGGREGATOR`, `ETH_USD_AGGREGATOR`, `SOL_ETH_AGGREGATOR`, and `DAI_USD_AGGREGATOR` with `btcUsdAggregatorAddress`, `ethUsdAggregatorAddress`, `solUsdAggregatorAddress`, and `daiUsdAggregatorAddress` in `script/VaultFactoryDeploy.s.sol`. 
+
+(8) Deploy test environment.
+```bash
+forge script ./script/VaultFactoryDeploy.s.sol --skip-simulation --rpc-url https://moonbase-alpha.public.blastapi.io --broadcast --slow -vvv
+```
+
+### Step 6. Deploy Uniswapv2 adapter.
+
+(1) Remember the address shown in `===Logs===` in the console: `integrationManagerAddress`.
+
+(2) Replace `IntergrationManagerAddress`, `UNISWAP_V2_FACTORY`, and `UNISWAP_V2_ROUTER_02` with `integrationManagerAddress`, `factory address`, and `router address` respectively (`factory address`, and `router address` are in the first log).
+
+(3) Deploy.
+```bash
+forge script ./script/AdapterDeploy.s.sol --skip-simulation --rpc-url https://moonbase-alpha.public.blastapi.io --broadcast --slow -vvv
+```
+
+------
+
+## 🔆 Test smart contracts
+
+```bash
+forge test
+```
+
+You can also manually run parts of the test suite, e.g:
+```bash
+forge test --match-test <REGEX>
+```
+
+Note: if the test is failed with `Could not instantiate forked environment with fork url`, please find a valid node of the Ethereum Mainnet and change `ETHEREUM_NODE_MAINNET` in `.env`.
