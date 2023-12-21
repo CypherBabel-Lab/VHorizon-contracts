@@ -1,4 +1,4 @@
-# cbi-protocol
+# polkadot-2023-winter-contracts
 
 # current deployed address on moonbase alpha
 
