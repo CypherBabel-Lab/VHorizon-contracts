@@ -12,6 +12,7 @@ import { MockV3Aggregator } from "chainlink-mock/src/MockV3Aggregator.sol";
 
 // uniswap v2 router 02 address
 address constant UNISWAP_V2_ROUTER_02 = 0xC0FcE24e33DB355e21d63eb91Fd35D8F65D0A1DE;
+address constant WNATIVE_TOKEN_ADDRESS = 0x3d0773F4D6092ddA362942718d23e2d5839E9923;
 
 contract EnvironmentDeploy is Script {
 
@@ -47,7 +48,6 @@ contract EnvironmentDeploy is Script {
          address wNativeTokenUsdAggregatorAddress = deployCode("MockV3Aggregator.sol",abi.encode(8, 100 * 10**8));
          console.log("wNativeTokenUsdAggregatorAddress",wNativeTokenUsdAggregatorAddress);
         // carete pair
-        IUniswapV2Router2 uniswapV2Router2 = IUniswapV2Router2(UNISWAP_V2_ROUTER_02);
         uint256 erc20WBTCAddressAmount = 1000000000000000000 * 1000;
         uint256 erc20WETHAddressAmount = 1000000000000000000 * 10000;
         uint256 erc20WSOLAddressAmount = 1000000000000000000 * 100000;
@@ -56,6 +56,10 @@ contract EnvironmentDeploy is Script {
         deployUniswapV2Pool(UNISWAP_V2_ROUTER_02, erc20WBTCAddress, erc20DAIAddress, erc20WBTCAddressAmount, erc20DAIAddressAmount);
         deployUniswapV2Pool(UNISWAP_V2_ROUTER_02, erc20WETHAddress, erc20DAIAddress, erc20WETHAddressAmount, erc20DAIAddressAmount);
         deployUniswapV2Pool(UNISWAP_V2_ROUTER_02, erc20WSOLAddress, erc20DAIAddress, erc20WSOLAddressAmount, erc20DAIAddressAmount);
+        // deploy wNativeToken's pair(2/100)
+        uint256 erc20WNativeTokenAddressAmount = 1000000000000000000 * 2; // 2 eth
+        IWETH(WNATIVE_TOKEN_ADDRESS).deposit{value: erc20WNativeTokenAddressAmount}();
+        deployUniswapV2Pool(UNISWAP_V2_ROUTER_02, WNATIVE_TOKEN_ADDRESS, erc20DAIAddress, erc20WNativeTokenAddressAmount, 100 * 10**18);
 
         vm.stopBroadcast();
      }
