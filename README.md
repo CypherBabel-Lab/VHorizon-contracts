@@ -29,10 +29,10 @@ There is a private key of a wallet with a positive balance, with which you can d
 cp .env.example .env
 ```
 
-You can also use your wallet on the Moonbase Alpha TestNet by setting `PRIVATE_KEY` in the `.env` file.
+You can also use your wallet on the TomoChain TestNet by setting `PRIVATE_KEY` in the `.env` file.
 
 
-### Step 4. Deploy Uniswap V2 on the Moonbase Alpha TestNet
+### Step 4. Deploy Uniswap V2 on the TomoChain TestNet
 
 (1) Build the project.
 ```bash
@@ -45,9 +45,9 @@ forge build
 
 (4) Replace the init code hash in `lib/uniswapv2/src/libraries/UniswapV2Library.sol`, line 26) with the output of (3).
 
-(5) Deploy the Uniswap V2 on the Moonbase Alpha TestNet.
+(5) Deploy the Uniswap V2 on the TomoChain TestNet.
 ```bash
-forge script ./script/UniswapV2Deploy.s.sol --skip-simulation --rpc-url https://moonbase-alpha.public.blastapi.io --broadcast --slow -vvv
+forge script ./script/UniswapV2Deploy.s.sol --skip-simulation --rpc-url https://rpc.testnet.tomochain.com --broadcast --slow -vvv
 ```
 
 (6) Remember the three addresses (`wnativetoken address`, `factory address`, and `router address`) shown in `===Logs===` in the console. They will be used later.
@@ -58,7 +58,7 @@ forge script ./script/UniswapV2Deploy.s.sol --skip-simulation --rpc-url https://
 
 (2) Deploy the corresponding contracts
 ```bash
-forge script ./script/EnvironmentDeploy.s.sol --skip-simulation --rpc-url https://moonbase-alpha.public.blastapi.io --broadcast --slow -vvv
+forge script ./script/EnvironmentDeploy.s.sol --skip-simulation --rpc-url https://rpc.testnet.tomochain.com --broadcast --slow -vvv
 ```
 
 (3) Remember nine addresses shown in `===Logs===` in the console: `erc20WBTCAddress`, `erc20WETHAddress`, `erc20WSOLAddress`, `erc20DAIAddress`, `btcUsdAggregatorAddress`, `ethUsdAggregatorAddress`, `solEthAggregatorAddress`, `daiUsdAggregatorAddress`, and `wNativeTokenUsdAggregatorAddress`. They will be used later.
@@ -73,7 +73,7 @@ forge script ./script/EnvironmentDeploy.s.sol --skip-simulation --rpc-url https:
 
 (8) Deploy test environment.
 ```bash
-forge script ./script/VaultFactoryDeploy.s.sol --skip-simulation --rpc-url https://moonbase-alpha.public.blastapi.io --broadcast --slow -vvv
+forge script ./script/VaultFactoryDeploy.s.sol --skip-simulation --rpc-url https://rpc.testnet.tomochain.com --broadcast --slow -vvv
 ```
 
 ### Step 6. Deploy Uniswapv2 adapter.
@@ -84,7 +84,7 @@ forge script ./script/VaultFactoryDeploy.s.sol --skip-simulation --rpc-url https
 
 (3) Deploy.
 ```bash
-forge script ./script/AdapterDeploy.s.sol --skip-simulation --rpc-url https://moonbase-alpha.public.blastapi.io --broadcast --slow -vvv
+forge script ./script/AdapterDeploy.s.sol --skip-simulation --rpc-url https://rpc.testnet.tomochain.com --broadcast --slow -vvv
 ```
 
 ------
