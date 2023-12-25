@@ -1,4 +1,4 @@
-# polkadot-2023-winter-contracts 🚀 How to run the project
+# 🚀 How to run the project
 
 ## 📦 Prerequisites
 
