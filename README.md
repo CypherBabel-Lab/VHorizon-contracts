@@ -29,10 +29,10 @@ There is a private key of a wallet with a positive balance, with which you can d
 cp .env.example .env
 ```
 
-You can also use your wallet on the TomoChain TestNet by setting `PRIVATE_KEY` in the `.env` file.
+You can also use your wallet on the TomoChain Testnet by setting `PRIVATE_KEY` in the `.env` file.
 
 
-### Step 4. Deploy Uniswap V2 on the TomoChain TestNet
+### Step 4. Deploy Uniswap V2 on the TomoChain Testnet
 
 (1) Build the project.
 ```bash
@@ -45,7 +45,7 @@ forge build
 
 (4) Replace the init code hash in `lib/uniswapv2/src/libraries/UniswapV2Library.sol`, line 26) with the output of (3).
 
-(5) Deploy the Uniswap V2 on the TomoChain TestNet.
+(5) Deploy the Uniswap V2 on the TomoChain Testnet.
 ```bash
 forge script ./script/UniswapV2Deploy.s.sol --skip-simulation --rpc-url https://rpc.testnet.tomochain.com --broadcast --slow -vvv
 ```
